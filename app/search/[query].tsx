@@ -1,12 +1,61 @@
-import { View, Text } from 'react-native'
-import React from 'react'
+import { useEffect } from 'react';
+import { useLocalSearchParams } from 'expo-router';
+import { View, Text, FlatList } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
-const SearchQueryScreen = () => {
+import { searchPosts } from '../../lib/appwrite';
+import { EmptyState, SearchInput, VideoCard } from '../../components';
+import useAppwrite from '@/hooks/useAppwrite';
+
+const Search = () => {
+  const { query } = useLocalSearchParams();
+  const { data: posts, refetch } = useAppwrite(() => searchPosts(query as string));
+
+  console.log(query);
+
+  useEffect(() => {
+    refetch();
+  }, [query]);
+
   return (
-    <View>
-      <Text>SearchQueryScreen</Text>
-    </View>
-  )
-}
+    <SafeAreaView className="bg-primary h-full">
+      <FlatList
+        data={posts}
+        keyExtractor={(item) => item.$id}
+        renderItem={({ item }) => (
+          <VideoCard
+            title={item.title}
+            thumbnail={item.thumbnail}
+            video={item.video}
+            creator={item.creator.username}
+            avatar={item.creator.avatar}
+          />
+        )}
+        ListHeaderComponent={() => (
+          <>
+            <View className="flex my-6 px-4">
+              <Text className="font-pmedium text-gray-100 text-sm">
+                Search Results
+              </Text>
+              <Text className="text-2xl font-psemibold text-white mt-1">
+                {query}
+              </Text>
 
-export default SearchQueryScreen
+              <View className="mt-6 mb-8">
+                <SearchInput initialQuery={query as string} refetch={refetch} />
+              </View>
+            </View>
+          </>
+        )}
+        ListEmptyComponent={() => (
+          <EmptyState
+            title="No Videos Found"
+            subtitle="No videos found for this search query"
+          />
+        )}
+      />
+    </SafeAreaView>
+  );
+};
+
+export default Search;

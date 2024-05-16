@@ -10,7 +10,6 @@ import { useGlobalContext } from '@/context/GlobalProvider';
 
 const Home = () => {
   const { user } = useGlobalContext();
-  console.log(user);
   const { data: posts, refetch } = useAppwrite(getAllPosts);
   const { data: latestPosts } = useAppwrite(getLatestPosts);
 
@@ -29,17 +28,17 @@ const Home = () => {
   //  we cannot do that with just scrollview as there's both horizontal and vertical scroll (two flat lists, within trending)
 
   return (
-    <SafeAreaView className="bg-primary">
+    <SafeAreaView className="bg-primary h-full">
       <FlatList
         data={posts}
-        // keyExtractor={(item) => item.$id}
+        keyExtractor={(item) => item.$id}
         renderItem={({ item }) => (
           <VideoCard
-          //title={item.title}
-          // thumbnail={item.thumbnail}
-          //video={item.video}
-          // creator={item.creator.username}
-          //avatar={item.creator.avatar}
+            title={item.title}
+            thumbnail={item.thumbnail}
+            video={item.video}
+            creator={item.creator.username}
+            avatar={item.creator.avatar}
           />
         )}
         ListHeaderComponent={() => (
@@ -70,16 +69,14 @@ const Home = () => {
                 Latest Videos
               </Text>
 
-              <Trending
-              // posts={latestPosts ?? []}
-              />
+              <Trending posts={latestPosts ?? []} />
             </View>
           </View>
         )}
         ListEmptyComponent={() => (
           <EmptyState
-          // title="No Videos Found"
-          //subtitle="No videos created yet"
+            title="No Videos Found"
+            subtitle="No videos created yet"
           />
         )}
         refreshControl={

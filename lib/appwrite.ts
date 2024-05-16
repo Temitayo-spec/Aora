@@ -8,6 +8,7 @@ import {
   QueryTypesList,
   Storage,
 } from 'react-native-appwrite';
+import * as DocumentPicker from 'expo-document-picker';
 
 export const appwriteConfig = {
   endpoint: 'https://cloud.appwrite.io/v1',
@@ -163,7 +164,7 @@ export async function getFilePreview(fileId: string, type: string) {
         fileId,
         2000,
         2000,
-        'top',
+        'top' as any,
         100
       );
     } else {
@@ -180,15 +181,18 @@ export async function getFilePreview(fileId: string, type: string) {
 
 // Create Video Post
 export async function createVideoPost(form: {
-  thumbnail: any;
+  thumbnail: DocumentPicker.DocumentPickerAsset | null;
   video: any;
-  title: any;
-  prompt: any;
-  userId: any;
+  title: string;
+  prompt: string;
+  userId: string;
 }) {
   try {
     const [thumbnailUrl, videoUrl] = await Promise.all([
-      uploadFile(form.thumbnail, 'image'),
+      uploadFile(
+        form.thumbnail as { [x: string]: any; mimeType: any },
+        'image'
+      ),
       uploadFile(form.video, 'video'),
     ]);
 
