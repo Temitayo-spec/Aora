@@ -5,6 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { images } from '@/constants';
 import { Link, router } from 'expo-router';
 import { createUser } from '@/lib/appwrite';
+import { UserProps, useGlobalContext } from '@/context/GlobalProvider';
 
 const SignUp = () => {
   const [values, setValues] = useState({
@@ -14,6 +15,7 @@ const SignUp = () => {
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { setUser, setIsLogged } = useGlobalContext();
 
   const submit = async () => {
     if (
@@ -26,13 +28,13 @@ const SignUp = () => {
 
     setIsSubmitting(true);
     try {
-      const result = await createUser(
+      const result = (await createUser(
         values.email,
         values.password,
         values.username
-      );
-      // setUser(result);
-      // setIsLogged(true);
+      )) as UserProps;
+      setUser(result);
+      setIsLogged(true);
 
       router.replace('/home');
     } catch (error: any) {
