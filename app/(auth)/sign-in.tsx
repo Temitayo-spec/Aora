@@ -1,18 +1,38 @@
 import { CustomButton, FormField } from '@/components';
 import { images } from '@/constants';
-import { Link } from 'expo-router';
+import { getCurrentUser, signIn } from '@/lib/appwrite';
+import { Link, router } from 'expo-router';
 import { useState } from 'react';
-import { View, Text, ScrollView, Image } from 'react-native';
+import { View, Text, ScrollView, Image, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 const SignIn = () => {
+  const [isSubmitting, setSubmitting] = useState(false);
   const [values, setValues] = useState({
     email: '',
     password: '',
   });
 
   const submit = async () => {
-    console.log('submit', values)
+    if (values.email === '' || values.password === '') {
+      Alert.alert('Error', 'Please fill in all fields');
+    }
+
+    setSubmitting(true);
+
+    try {
+      await signIn(values.email, values.password);
+      const result = await getCurrentUser();
+      //setUser(result);
+      //setIsLogged(true);
+
+      Alert.alert('Success', 'User signed in successfully');
+      router.replace('/home');
+    } catch (error: any) {
+      Alert.alert('Error', error.message);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -47,7 +67,7 @@ const SignIn = () => {
             title="Sign In"
             handlePress={submit}
             containerStyles="mt-7"
-            // isLoading={isSubmitting}
+            isLoading={isSubmitting}
           />
 
           <View className="flex justify-center pt-5 flex-row gap-2">
