@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   Pressable,
 } from 'react-native';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Link, Redirect, router, useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { images } from '@/constants';
@@ -16,7 +16,14 @@ import { useGlobalContext } from '@/context/GlobalProvider';
 const HomeScreen = () => {
   const { loading, isLogged } = useGlobalContext();
 
-  if (!loading && isLogged) return <Redirect href="/home" />;
+  useEffect(() => {
+    if (!loading && isLogged) {
+      router.push('/home');
+    } else {
+      router.push('/sign-in');
+    }
+  }, []);
+
   return (
     <SafeAreaView className="bg-primary h-full">
       <ScrollView contentContainerStyle={{ height: '100%' }}>
